@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
@@ -14,7 +14,7 @@ for t in range(T):
     idx = np.random.choice(len(X_train), size=m, replace=False)
     X_t = X_train[idx]
     y_t = y_train[idx]
-    model = KNeighborsClassifier(n_neighbors=1)
+    model = MLPClassifier(hidden_layer_sizes=(100,), activation="relu",max_iter=500, random_state=0)
     model.fit(X_t, y_t)
     preds[t] = model.predict_proba(X_test)[:, 1]
 mean_pred = preds.mean(axis=0)
@@ -45,15 +45,15 @@ print("Error", bias2 + variance)
 bias_arr = np.array(bias_list)
 var_arr = np.array(var_list)
 bias_cutoff = np.percentile(bias_arr, 90)
-var_cutoff = np.percentile(var_arr, 90)
+var_cutoff  = np.percentile(var_arr, 90)
 high_bias = bias_arr >= bias_cutoff
-high_var = var_arr  >= var_cutoff
-overlap = high_bias & high_var
-bias_only = high_bias & (~high_var)
-var_only = high_var  & (~high_bias)
-plt.scatter(X_test[var_only, 0], X_test[var_only, 1], color="blue")
+high_var  = var_arr  >= var_cutoff
+overlap    = high_bias & high_var
+bias_only  = high_bias & (~high_var)
+var_only   = high_var  & (~high_bias)
+plt.scatter(X_test[var_only, 0],  X_test[var_only, 1],  color="blue")
 plt.scatter(X_test[bias_only, 0], X_test[bias_only, 1], color="red")
-plt.scatter(X_test[overlap, 0], X_test[overlap, 1], color="orange")
+plt.scatter(X_test[overlap, 0],   X_test[overlap, 1],   color="orange")
 x1_vals = np.array([0, 10])
 x2_vals = 2 * x1_vals - 5
 plt.plot(x1_vals, x2_vals, color="black", linewidth=2)
