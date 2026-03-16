@@ -3,7 +3,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-data = np.load("init_dataset.npz")
+data = np.load("noise_dataset_skew.npz")
 X = data["X"]
 y = data["y"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -16,7 +16,7 @@ for t in range(T):
     y_t = y_train[idx]
     model = KNeighborsClassifier(n_neighbors=1)
     model.fit(X_t, y_t)
-    preds[t] = model.predict_proba(X_test)[:, 1]
+    preds[t] = model.predict_proba(X_test)[:,1]
 mean_pred = preds.mean(axis=0)
 bias_list = []
 for i in range(len(y_test)):

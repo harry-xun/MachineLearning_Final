@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
@@ -14,7 +14,7 @@ for t in range(T):
     idx = np.random.choice(len(X_train), size=m, replace=False)
     X_t = X_train[idx]
     y_t = y_train[idx]
-    model = LogisticRegression()
+    model = DecisionTreeClassifier(random_state=42)
     model.fit(X_t, y_t)
     preds[t] = model.predict_proba(X_test)[:, 1]
 mean_pred = preds.mean(axis=0)

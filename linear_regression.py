@@ -45,18 +45,22 @@ print("Error", bias2 + variance)
 bias_arr = np.array(bias_list)
 var_arr = np.array(var_list)
 bias_cutoff = np.percentile(bias_arr, 90)
-var_cutoff  = np.percentile(var_arr, 90)
+var_cutoff = np.percentile(var_arr, 90)
 high_bias = bias_arr >= bias_cutoff
-high_var  = var_arr  >= var_cutoff
-overlap    = high_bias & high_var
-bias_only  = high_bias & (~high_var)
-var_only   = high_var  & (~high_bias)
-plt.scatter(X_test[var_only, 0],  X_test[var_only, 1],  color="blue")
-plt.scatter(X_test[bias_only, 0], X_test[bias_only, 1], color="red")
-plt.scatter(X_test[overlap, 0],   X_test[overlap, 1],   color="orange")
+high_var = var_arr  >= var_cutoff
+overlap = high_bias & high_var
+bias_only = high_bias & (~high_var)
+var_only = high_var  & (~high_bias)
+plt.scatter(X_test[var_only, 0], X_test[var_only, 1], color="#7FBF7B", label="High variance")
+plt.scatter(X_test[bias_only, 0], X_test[bias_only, 1], color="#F07C98", label="High bias")
+plt.scatter(X_test[overlap, 0], X_test[overlap, 1], color="#8E7CC3", label="Both")
+
 x1_vals = np.array([0, 10])
 x2_vals = 2 * x1_vals - 5
 plt.plot(x1_vals, x2_vals, color="black", linewidth=2)
+
 plt.xlim(0, 10)
 plt.ylim(0, 10)
+
+plt.legend()
 plt.show()

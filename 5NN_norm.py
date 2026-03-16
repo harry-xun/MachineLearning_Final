@@ -1,12 +1,16 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
 
-data = np.load("noise_dataset.npz")
+data = np.load("noise_dataset_skew.npz")
 X = data["X"]
 y = data["y"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 T = 500
 m = 200
 preds = np.zeros((T, len(X_test)))
@@ -14,9 +18,9 @@ for t in range(T):
     idx = np.random.choice(len(X_train), size=m, replace=False)
     X_t = X_train[idx]
     y_t = y_train[idx]
-    model = LogisticRegression()
+    model = KNeighborsClassifier(n_neighbors=5)
     model.fit(X_t, y_t)
-    preds[t] = model.predict_proba(X_test)[:, 1]
+    preds[t] = model.predict_proba(X_test)[:,1]
 mean_pred = preds.mean(axis=0)
 bias_list = []
 for i in range(len(y_test)):

@@ -1,12 +1,16 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+from sklearn import svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
 
 data = np.load("noise_dataset.npz")
 X = data["X"]
 y = data["y"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 T = 500
 m = 200
 preds = np.zeros((T, len(X_test)))
@@ -14,7 +18,7 @@ for t in range(T):
     idx = np.random.choice(len(X_train), size=m, replace=False)
     X_t = X_train[idx]
     y_t = y_train[idx]
-    model = LogisticRegression()
+    model = svm.SVC(kernel='linear', C=1.0, probability=True)
     model.fit(X_t, y_t)
     preds[t] = model.predict_proba(X_test)[:, 1]
 mean_pred = preds.mean(axis=0)
@@ -50,7 +54,7 @@ high_bias = bias_arr >= bias_cutoff
 high_var = var_arr  >= var_cutoff
 overlap = high_bias & high_var
 bias_only = high_bias & (~high_var)
-var_only = high_var  & (~high_bias)
+var_only = high_var & (~high_bias)
 plt.scatter(X_test[var_only, 0], X_test[var_only, 1], color="blue")
 plt.scatter(X_test[bias_only, 0], X_test[bias_only, 1], color="red")
 plt.scatter(X_test[overlap, 0], X_test[overlap, 1], color="orange")
